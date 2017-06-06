@@ -26,8 +26,6 @@
         }
     ]    
     */
-    include_once("header.php");
-
     function user_exist ($user) {
         $content = file_get_contents("source/auth.json");
         $users = json_decode($content);
@@ -49,20 +47,23 @@
         if ($login == "login" && file_exists("source/auth.json") &&
         isset($_POST['user']) && isset($_POST['pass'])) {
             $form->user = htmlspecialchars($_POST['user']);
-            $form->pass = md5(htmlspecialchars($_POST['pass']) . file_get_contents("../favicon.ico"));
+            $form->pass = md5(htmlspecialchars($_POST['pass']));
             $fd = fopen("source/auth.json", "r") or die("Can't open file.");
             $content = file_get_contents("source/auth.json");
             $auths = json_decode($content);
             foreach ($auths as $auth) {
                 if ($auth->user == $form->user && $auth->pass == $form->pass) {
-                    echo "vous etes connecté avec l'utilisateur $auth->user et le mdp est $auth->pass";                 
+                    session_start();
+                    $_SESSION['user'] = $form->user;
+                    header('Location: index.php');
+                    exit ();
                 }
             }
             fclose($fd);
         } elseif ($login == "register" && isset($_POST['user']) &&
         isset($_POST['pass']) && isset($_POST['pass2'])) {
             $form->user = htmlspecialchars($_POST['user']);
-            $form->pass = md5(htmlspecialchars($_POST['pass'] . file_get_contents("../favicon.ico")));
+            $form->pass = md5(htmlspecialchars($_POST['pass']));
             if(!file_exists("source/auth.json") || file_get_contents("source/auth.json") == "") {
                 $auths = [];
                 $auths[0] = $form;
@@ -71,22 +72,16 @@
                     $auths = json_decode($content);
                 if (user_exist($form) == false) {
                     array_push($auths, $form);
+                } else {
+                    header('Location: register.php?user_exist=false');
+                    exit();
                 }
             }
             $fd = fopen("source/auth.json", "w") or die("Can't open file.");
             fwrite ($fd, json_encode($auths));
             echo json_encode($auths);
             fclose($fd);
-
-
-            // if (!file_exists("source/auth.json")) {
-            //     $content = file_get_contents("source/auth.json");
-            //     $auths = json_decode($content);
-            //     array_push($auths, $form);
-            // } else {
-            //     $auths = [];
-            //     $auths[0] = $form;
-            // }
+            header('Location: index.php');
         }
     }
 ?>

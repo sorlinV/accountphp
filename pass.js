@@ -12,7 +12,7 @@ form.addEventListener("submit", function(e) {
         }
     }
     if (pass.value === pass2.value) {
-        pass.value += a;
+        //incomining
     } else {
         document.querySelector("#error_pass").textContent = "Not same password !";
         e.preventDefault();
