@@ -103,6 +103,10 @@ form {
     background-color: lightseagreen;
 }
 
+form input {
+    width: 80%;
+}
+
 header>form {
     display: flex;
     flex-direction: column;
@@ -112,4 +116,15 @@ header>form {
     width: 10%;
     margin: 0;
     background-color: lightseagreen;
+}
+
+main>article {
+    width: 100%;
+    max-width: 1000px;
+    background: lightcoral;
+}
+
+main>article>h2 {
+    border: 1px solid black;
+    width: 100%;
 }

@@ -37,17 +37,29 @@
         return false;
     }
 
-    $form = new class{};
     if (!is_dir("source")) {
         mkdir("source");
     }
 
+    function getSaltInFile ($user) {
+        $content = file_get_contents("source/auth.json");
+        $auths = json_decode($content);
+        foreach ($auths as $auth) {
+            if ($user == $auth->user) {
+                return $auth->salt;
+            }
+        }
+        return false;
+    }
+
+    $form = new class{};
     if (isset($_POST['login'])) {
         $login = htmlspecialchars($_POST['login']);
         if ($login == "login" && file_exists("source/auth.json") &&
         isset($_POST['user']) && isset($_POST['pass'])) {
             $form->user = htmlspecialchars($_POST['user']);
-            $form->pass = md5(htmlspecialchars($_POST['pass']));
+            $form->salt = getSaltInFile($form->user);
+            $form->pass = hash("sha256", htmlspecialchars($_POST['pass']) . $form->salt);
             $fd = fopen("source/auth.json", "r") or die("Can't open file.");
             $content = file_get_contents("source/auth.json");
             $auths = json_decode($content);
@@ -56,14 +68,17 @@
                     session_start();
                     $_SESSION['user'] = $form->user;
                     header('Location: index.php');
+                    fclose($fd);
                     exit ();
                 }
             }
+            header('Location: index.php?user_exist=false');
             fclose($fd);
         } elseif ($login == "register" && isset($_POST['user']) &&
         isset($_POST['pass']) && isset($_POST['pass2'])) {
             $form->user = htmlspecialchars($_POST['user']);
-            $form->pass = md5(htmlspecialchars($_POST['pass']));
+            $form->salt = bin2hex(random_bytes (64));
+            $form->pass = hash("sha256", htmlspecialchars($_POST['pass']) . $form->salt);
             if(!file_exists("source/auth.json") || file_get_contents("source/auth.json") == "") {
                 $auths = [];
                 $auths[0] = $form;
@@ -79,7 +94,6 @@
             }
             $fd = fopen("source/auth.json", "w") or die("Can't open file.");
             fwrite ($fd, json_encode($auths));
-            echo json_encode($auths);
             fclose($fd);
             header('Location: index.php');
         }
