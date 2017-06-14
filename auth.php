@@ -72,7 +72,8 @@
                     exit ();
                 }
             }
-            header('Location: index.php?user_exist=false');
+            echo "user not find";
+            header('Location: index.php?login=false');
             fclose($fd);
         } elseif ($login == "register" && isset($_POST['user']) &&
         isset($_POST['pass']) && isset($_POST['pass2'])) {
@@ -88,7 +89,7 @@
                 if (user_exist($form) == false) {
                     array_push($auths, $form);
                 } else {
-                    header('Location: register.php?user_exist=false');
+                    header('Location: register.php?register=false');
                     exit();
                 }
             }
@@ -96,6 +97,8 @@
             fwrite ($fd, json_encode($auths));
             fclose($fd);
             header('Location: index.php');
+        } else {
+            header('Location: index.php?login=false');
         }
     }
 ?>

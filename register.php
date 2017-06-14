@@ -17,8 +17,12 @@
         <input type="password" name="pass" id="pass" placeholder="Password">
         <input type="password" name="pass2"id="pass2" placeholder="retype Password">
         <input type="submit" value="Go">
+        <p id="error_pass" class="text_error"><?php
+        if (isset($_GET['register']) && $_GET['register'] == "false") {
+                echo "User already exist !";
+            }
+        ?></p>
     </form>
-    <p id="error_pass"></p>
     <script type="text/javascript" src="pass.js"></script>
 </body>
 </html>

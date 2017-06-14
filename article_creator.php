@@ -12,8 +12,8 @@
         }
         if (isset($_POST['title_article']) && isset($_POST['content_article'])) {
             if (!is_file("user_page/" . $_SESSION['user'] . '/' . $_POST['title_article'] . '.txt')) {
-                $file = fopen("user_page/" . $_SESSION['user'] . '/' . $_POST['title_article'] . '.txt', "w");
-                fwrite($file, $_POST['content_article']);
+                $file = fopen("user_page/" . $_SESSION['user'] . '/' . htmlspecialchars($_POST['title_article']) . '.txt', "w");
+                fwrite($file, htmlspecialchars($_POST['content_article']));
                 fclose($file);
                 header('location: '. "user_page/" . $_SESSION['user'] . '/index.php');
                 exit ();
